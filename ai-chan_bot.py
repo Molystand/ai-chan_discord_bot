@@ -34,6 +34,17 @@ async def pat(ctx, user: discord.User):
     await ctx.send(f'{user.mention}, вас погладил {ctx.author.mention}', file=discord.File(abspath))
 
 
+@bot.command(aliases=['потискать', 'обнял'])
+async def hug(ctx, user: discord.User):
+    catalog = './media/gif/hug/'
+    files = os.listdir(catalog)
+    file = random.choice(files)
+    abspath = os.path.abspath(f'{catalog}{file}')
+
+    author = ctx.author.mention
+    await ctx.send(f'{user.mention}, вас обнял {author}', file=discord.File(abspath))
+
+
 @bot.command(name='прогноз')
 # Вывод шутливого прогноза с gif
 async def predict(ctx):
