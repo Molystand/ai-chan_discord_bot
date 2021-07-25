@@ -21,24 +21,27 @@ async def bugs(ctx, *, bug_note: str):
         'Ваше сообщение о баге передано в службу поддержки! В качестве извинений примите от нас 108 примогемов и крестом по ебалу')
 
 
-# Вернуть абсолютный путь к рандомному файлу из каталога
-def get_randfile_abspath(catalog: str) -> str:
+# Вернуть абсолютный путь к рандомному файлу gif из каталога
+def get_randgif_abspath(catalog: str) -> str:
     files = os.listdir(catalog)
-    file = random.choice(files)
+    gif_files = [gif for gif in files if gif.endswith('.gif')]
+    file = random.choice(gif_files)
     path = os.path.abspath(f'{catalog}{file}')
     print(path)
     return path
 
 
-@bot.command(aliases=['кушац', 'еда'])
+@bot.command(aliases=['кушать', 'еда', 'кусь'])
 async def eat(ctx, user: discord.User):
-    file = discord.File(get_randfile_abspath('./media/gif/eat/'),
+    file = discord.File(get_randgif_abspath('./media/gif/eat/'),
                         filename='image.gif')
     embed = discord.Embed(description=f'{user.mention}, вас съел {ctx.author.mention}')
     embed.set_image(url='attachment://image.gif')
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
+
+# todo пофиксить feed/self
 
 
 @bot.command(aliases=['кормить', 'покормить'])
@@ -47,11 +50,11 @@ async def feed(ctx, user: discord.User = None):
 
     if user == ctx.author or user is None:
         embed.description = f'{ctx.author.mention} покушал'
-        file = discord.File(get_randfile_abspath('./media/gif/feed/self/'),
+        file = discord.File(get_randgif_abspath('./media/gif/feed/self/'),
                             filename='image.gif')
     else:
         embed.description = f'{ctx.author.mention} накормил {user.mention}'
-        file = discord.File(get_randfile_abspath('./media/gif/feed/'),
+        file = discord.File(get_randgif_abspath('./media/gif/feed/'),
                             filename='image.gif')
 
     embed.set_image(url='attachment://image.gif')
@@ -60,17 +63,18 @@ async def feed(ctx, user: discord.User = None):
     await ctx.send(file=file, embed=embed)
 
 
-# @bot.command(aliases=['кормить', 'покормить'])
-# async def feed(ctx):
-#     feed(ctx, ctx.author)
+@bot.command(aliases=['погладить', 'гладить'])
+async def pat(ctx, user: discord.User = None):
+    embed = discord.Embed()
 
-
-@bot.command()
-async def pat(ctx, user: discord.User):
-    file = discord.File(get_randfile_abspath('./media/gif/pat/'),
-                        filename='image.gif')
-    embed = discord.Embed(description=f'{user.mention}, вас погладил {ctx.author.mention}')
-    embed.set_image(url='attachment://image.gif')
+    if user == ctx.author or user is None:
+        file = None
+        embed.description = f'{ctx.author.mention} гладит себя в общественном месте\nЯ отказываюсь это показывать'
+    else:
+        file = discord.File(get_randgif_abspath('./media/gif/pat/'),
+                            filename='image.gif')
+        embed.description = f'{user.mention}, вас погладил {ctx.author.mention}'
+        embed.set_image(url='attachment://image.gif')
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
@@ -78,27 +82,33 @@ async def pat(ctx, user: discord.User):
 
 @bot.command(aliases=['потискать', 'обнять'])
 async def hug(ctx, user: discord.User = None):
-    await ctx.message.delete()
     embed = discord.Embed()
 
     if user == ctx.author or user is None:
+        file = None
         embed.description = f'Обнимите кто-нибудь {ctx.author.mention}'
-        await ctx.send(embed=embed)
     else:
-        file = discord.File(get_randfile_abspath('./media/gif/hug/'),
+        file = discord.File(get_randgif_abspath('./media/gif/hug/'),
                             filename='image.gif')
         embed.description = f'{user.mention}, вас обнял {ctx.author.mention}'
         embed.set_image(url='attachment://image.gif')
-        await ctx.send(file=file, embed=embed)
-    # todo попробовать унифицировать await через file=None
+
+    await ctx.message.delete()
+    await ctx.send(file=file, embed=embed)
 
 
 @bot.command(aliases=['тык', 'ткнуть'])
-async def poke(ctx, user: discord.User):
-    file = discord.File(get_randfile_abspath('./media/gif/poke/'),
-                        filename='image.gif')
-    embed = discord.Embed(description=f'{ctx.author.mention} сделал тык {user.mention}')
-    embed.set_image(url='attachment://image.gif')
+async def poke(ctx, user: discord.User = None):
+    embed = discord.Embed()
+
+    if user == ctx.author or user is None:
+        file = None
+        embed.description = f'{ctx.author.mention} выбирает вилку и делает selfтык'
+    else:
+        file = discord.File(get_randgif_abspath('./media/gif/poke/'),
+                            filename='image.gif')
+        embed.description = f'{ctx.author.mention} сделал тык {user.mention}'
+        embed.set_image(url='attachment://image.gif')
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
@@ -106,7 +116,7 @@ async def poke(ctx, user: discord.User):
 
 @bot.command(aliases=['флекс'])
 async def flex(ctx):
-    file = discord.File(get_randfile_abspath('./media/gif/flex/'),
+    file = discord.File(get_randgif_abspath('./media/gif/flex/'),
                         filename='image.gif')
     embed = discord.Embed(description=f'{ctx.author.mention} сегодня флексит')
     embed.set_image(url='attachment://image.gif')
@@ -115,10 +125,8 @@ async def flex(ctx):
     await ctx.send(file=file, embed=embed)
 
 
-# todo съесть, погладить, обнять, тькнуть себя
+# todo погладить себя
 # @user вновь пытается гладить себя в общественном месте
-# Обнимите кто-нибудь @user
-# @user думает выбрать вилку (мб)
 # todo бд для бота
 # todo обработка исключений
 
@@ -130,6 +138,8 @@ async def predict(ctx):
     # открыть файл с предсказаниями
     # разбить файл на список строк
     # choise рандомную строку
+    await ctx.send('На улице +40, ты охуел? Я отказываюсь работать в такую жару. С уважением, Аи-чан >_<')
+
     await ctx.message.delete()
     await ctx.send()
 
