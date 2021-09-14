@@ -41,8 +41,6 @@ async def eat(ctx, user: discord.User):
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
 
-# todo пофиксить feed/self
-
 
 @bot.command(aliases=['кормить', 'покормить'])
 async def feed(ctx, user: discord.User = None):
@@ -102,13 +100,15 @@ async def poke(ctx, user: discord.User = None):
     embed = discord.Embed()
 
     if user == ctx.author or user is None:
-        file = None
+        file = discord.File(get_randgif_abspath('./media/gif/poke/self/'),
+                            filename='image.gif')
         embed.description = f'{ctx.author.mention} выбирает вилку и делает selfтык'
     else:
         file = discord.File(get_randgif_abspath('./media/gif/poke/'),
                             filename='image.gif')
         embed.description = f'{ctx.author.mention} сделал тык {user.mention}'
-        embed.set_image(url='attachment://image.gif')
+
+    embed.set_image(url='attachment://image.gif')
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
