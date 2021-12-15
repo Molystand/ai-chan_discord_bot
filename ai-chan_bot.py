@@ -133,15 +133,19 @@ async def flex(ctx):
 
 @bot.command(aliases=['аватар', 'ава'])
 async def avatar(ctx, *, avamember: discord.Member = None):
-    if avamember is None:
-        await ctx.send('Пользователь не найден')
-    else:
-        avatar_url = avamember.avatar_url
-        embed = discord.Embed(description=f'Аватар пользователя {avamember.mention} по запросу {ctx.author.mention}')
-        embed.set_image(url=avatar_url)
+    avatar_url = avamember.avatar_url
+    embed = discord.Embed(description=f'Аватар пользователя {avamember.mention} по запросу {ctx.author.mention}')
+    embed.set_image(url=avatar_url)
 
-        await ctx.message.delete()
-        await ctx.send(embed=embed)
+    await ctx.message.delete()
+    await ctx.send(embed=embed)
+
+
+@avatar.error
+async def avatar_error(ctx, error):
+    if isinstance(error, commands.MemberNotFound):
+        await ctx.send('Пользователь не найден')
+
 
 
 # todo погладить себя
