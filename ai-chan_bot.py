@@ -32,11 +32,17 @@ def get_randgif_abspath(catalog: str) -> str:
 
 
 @bot.command(aliases=['кушать', 'еда', 'кусь'])
-async def eat(ctx, user: discord.User):
-    file = discord.File(get_randgif_abspath('./media/gif/eat/'),
-                        filename='image.gif')
-    embed = discord.Embed(description=f'{user.mention}, вас съел {ctx.author.mention}')
-    embed.set_image(url='attachment://image.gif')
+async def eat(ctx, user: discord.User = None):
+    embed = discord.Embed()
+    file = None
+
+    if user == ctx.author or user is None:
+        embed.description = f'{ctx.author.mention} очень голоден и требует еды'
+    else:
+        file = discord.File(get_randgif_abspath('./media/gif/eat/'),
+                            filename='image.gif')
+        embed.description = f'{user.mention}, вас съел {ctx.author.mention}'
+        embed.set_image(url='attachment://image.gif')
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
@@ -64,9 +70,9 @@ async def feed(ctx, user: discord.User = None):
 @bot.command(aliases=['погладить', 'гладить'])
 async def pat(ctx, user: discord.User = None):
     embed = discord.Embed()
+    file = None
 
     if user == ctx.author or user is None:
-        file = None
         embed.description = f'{ctx.author.mention} гладит себя в общественном месте\nЯ отказываюсь это показывать'
     else:
         file = discord.File(get_randgif_abspath('./media/gif/pat/'),
@@ -81,9 +87,9 @@ async def pat(ctx, user: discord.User = None):
 @bot.command(aliases=['потискать', 'обнять'])
 async def hug(ctx, user: discord.User = None):
     embed = discord.Embed()
+    file = None
 
     if user == ctx.author or user is None:
-        file = None
         embed.description = f'Обнимите кто-нибудь {ctx.author.mention}'
     else:
         file = discord.File(get_randgif_abspath('./media/gif/hug/'),
@@ -123,6 +129,19 @@ async def flex(ctx):
 
     await ctx.message.delete()
     await ctx.send(file=file, embed=embed)
+
+
+@bot.command(aliases=['аватар', 'ава'])
+async def avatar(ctx, *, avamember: discord.Member = None):
+    if avamember is None:
+        await ctx.send('Пользователь не найден')
+    else:
+        avatar_url = avamember.avatar_url
+        embed = discord.Embed(description=f'Аватар пользователя {avamember.mention} по запросу {ctx.author.mention}')
+        embed.set_image(url=avatar_url)
+
+        await ctx.message.delete()
+        await ctx.send(embed=embed)
 
 
 # todo погладить себя
